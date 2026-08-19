@@ -400,7 +400,7 @@
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwxZVq1kWOrghEDSFU1RqY0cD2zfGXSwC7xFMWsbKHet3oa7qs9kFkDqBykFZD5Jdg4gQ/exec"; 
-        const TEMPLATE_URL = "ID-Temp.png"; 
+        const TEMPLATE_URL = "public/images/ID-Temp.png"; 
 
         const canvas = document.getElementById('idCanvas');
         const ctx = canvas.getContext('2d');
@@ -429,10 +429,10 @@
             const grades = new Set();
 
             students.forEach(s => {
-                if (s.grade) grades.add(String(s.grade).trim());
+                const gradeVal = s.grade || s.gradeLevel;
+                if (gradeVal) grades.add(String(gradeVal).trim());
             });
 
-            // Sort grades numerically/alphabetically
             const sortedGrades = Array.from(grades).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
 
             sortedGrades.forEach(grade => {
@@ -449,8 +449,9 @@
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
 
             const filtered = allStudents.filter(s => {
-                const matchesGrade = (selectedGrade === "ALL") || (String(s.grade).trim() === selectedGrade);
-                const matchesSearch = `${s.lastname} ${s.firstname} ${s.grade} ${s.section}`.toLowerCase().includes(searchQuery);
+                const studentGrade = String(s.grade || s.gradeLevel || '').trim();
+                const matchesGrade = (selectedGrade === "ALL") || (studentGrade === selectedGrade);
+                const matchesSearch = `${s.lastname || ''} ${s.firstname || ''} ${studentGrade} ${s.section || ''}`.toLowerCase().includes(searchQuery);
                 return matchesGrade && matchesSearch;
             });
 
@@ -474,7 +475,10 @@
                 const originalIndex = allStudents.indexOf(student);
                 const option = document.createElement('option');
                 option.value = originalIndex;
-                option.text = `${student.lastname}, ${student.firstname} (Grade ${student.grade || '-'})`;
+                const lastName = student.lastname || student.lastName || 'Student';
+                const firstName = student.firstname || student.firstName || '';
+                const grade = student.grade || student.gradeLevel || '-';
+                option.text = `${lastName}, ${firstName} (Grade ${grade})`;
                 dropdown.appendChild(option);
             });
 
@@ -500,9 +504,15 @@
         function updateStudentInfo(index) {
             const user = allStudents[index];
             if (!user) return;
-            document.getElementById('infoName').innerText = `${user.firstname || ''} ${user.lastname || ''}`;
-            document.getElementById('infoGrade').innerText = `${user.grade || ''} ${user.section || ''}`;
-            document.getElementById('infoPhone').innerText = user.parentPhone || '--';
+            const firstName = user.firstname || user.firstName || '';
+            const lastName = user.lastname || user.lastName || '';
+            const grade = user.grade || user.gradeLevel || '';
+            const section = user.section || '';
+            const phone = user.parentPhone || user.parent_phone || user.contact || '--';
+
+            document.getElementById('infoName').innerText = `${firstName} ${lastName}`.trim() || '--';
+            document.getElementById('infoGrade').innerText = `${grade} ${section}`.trim() || '--';
+            document.getElementById('infoPhone').innerText = phone;
         }
 
         function getDirectDriveImageUrl(url) {
@@ -533,58 +543,87 @@
                 ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height); 
 
                 const drawDetails = (userPhoto = null) => {
+                    // 1. Photo Placement (Aligned to maroon dashed box: X:171, Y:198, W:227, H:230)
                     if (userPhoto) {
-                        const targetX = 174; 
-                        const targetY = 185; 
-                        const targetSize = 220; 
+                        const targetX = 171; 
+                        const targetY = 198; 
+                        const targetW = 227; 
+                        const targetH = 230; 
 
                         const imgW = userPhoto.width;
                         const imgH = userPhoto.height;
 
-                        const scale = Math.max(targetSize / imgW, targetSize / imgH);
+                        const scale = Math.max(targetW / imgW, targetH / imgH);
                         const drawW = imgW * scale;
                         const drawH = imgH * scale;
 
-                        const drawX = targetX + (targetSize - drawW) / 2;
-                        const drawY = targetY + (targetSize - drawH) / 2;
+                        const drawX = targetX + (targetW - drawW) / 2;
+                        const drawY = targetY + (targetH - drawH) / 2;
 
                         ctx.save();
                         ctx.beginPath();
-                        ctx.rect(targetX, targetY, targetSize, targetSize);
+                        ctx.rect(targetX, targetY, targetW, targetH);
                         ctx.clip();
                         ctx.drawImage(userPhoto, drawX, drawY, drawW, drawH);
                         ctx.restore();
                     }
 
+                    // 2. Text Alignment & Layout
+                    const centerX = canvas.width / 2; // 284.5
                     ctx.textAlign = "center"; 
-                    ctx.fillStyle = "#111111";
-                    ctx.font = "bold 18px Arial";
+                    ctx.textBaseline = "middle";
+
+                    // Full Name (Under "LAST NAME, FIRST NAME M.I.")
+                    const lastName = selectedUser.lastname || selectedUser.lastName || '';
+                    const firstName = selectedUser.firstname || selectedUser.firstName || '';
+                    const middleName = selectedUser.middleName || selectedUser.middlename || selectedUser.mi || '';
                     
-                    const centerX = 284; 
+                    let fullName = `${lastName}, ${firstName} ${middleName}`.trim();
+                    if (fullName === ',') fullName = selectedUser.name || 'STUDENT NAME';
 
-                    // Name
-                    const fullName = `${selectedUser.lastname || ""}, ${selectedUser.firstname || ""} ${selectedUser.middleName || ""}`.trim();
-                    ctx.fillText(fullName.toUpperCase(), centerX, 475);
+                    ctx.fillStyle = "#0a0a0a";
+                    ctx.font = "800 22px 'Plus Jakarta Sans', Arial, sans-serif";
+                    ctx.fillText(fullName.toUpperCase(), centerX, 515);
 
-                    // LRN
-                    ctx.fillText((selectedUser.lrn || ""), centerX, 340);
+                    // Grade & Section (Above "GRADE & SECTION" label)
+                    const grade = selectedUser.grade || selectedUser.gradeLevel || '';
+                    const section = selectedUser.section || selectedUser.track || selectedUser.strand || '';
+                    let gradeSec = '';
+                    if (grade && section) {
+                        gradeSec = `GRADE ${grade} - ${section}`;
+                    } else if (grade) {
+                        gradeSec = `GRADE ${grade}`;
+                    } else if (section) {
+                        gradeSec = section;
+                    }
+                    
+                    if (gradeSec) {
+                        ctx.fillStyle = "#880015";
+                        ctx.font = "bold 20px 'Plus Jakarta Sans', Arial, sans-serif";
+                        ctx.fillText(gradeSec.toUpperCase(), centerX, 565);
+                    }
 
-                    // Grade & Section
-                    const gradeSec = `${selectedUser.grade || ''} ${selectedUser.section || ''}`.trim();
-                    ctx.fillText(gradeSec.toUpperCase(), centerX, 605);
+                    // LRN Number
+                    const lrn = selectedUser.lrn || selectedUser.lrnNo || selectedUser.id || 'N/A';
+                    ctx.fillStyle = "#111111";
+                    ctx.font = "600 18px 'Plus Jakarta Sans', Arial, sans-serif";
+                    ctx.fillText(`LRN: ${lrn}`, centerX, 642);
 
                     // Parent's Phone
-                    ctx.fillText((selectedUser.parentPhone || ""), centerX, 670);
+                    const phone = selectedUser.parentPhone || selectedUser.parent_phone || selectedUser.contact || selectedUser.phone || 'N/A';
+                    ctx.fillStyle = "#111111";
+                    ctx.font = "600 18px 'Plus Jakarta Sans', Arial, sans-serif";
+                    ctx.fillText(phone, centerX, 716);
 
                     document.getElementById('downloadBtn').style.display = "flex";
                     btn.innerText = "Render ID Badge";
                 };
 
-                if (selectedUser.photoUrl) {
+                const photoSrc = selectedUser.photoUrl || selectedUser.photo || selectedUser.image;
+                if (photoSrc) {
                     const userImg = new Image();
                     userImg.crossOrigin = "Anonymous";
-                    const directUrl = getDirectDriveImageUrl(selectedUser.photoUrl);
-                    userImg.src = directUrl; 
+                    userImg.src = getDirectDriveImageUrl(photoSrc); 
                     
                     userImg.onload = () => drawDetails(userImg);
                     userImg.onerror = () => drawDetails(null);
@@ -599,9 +638,10 @@
         document.getElementById('downloadBtn').addEventListener('click', () => {
             const dropdown = document.getElementById('studentDropdown');
             const selectedUser = allStudents[dropdown.value];
+            const lastName = selectedUser?.lastname || selectedUser?.lastName || 'Student';
             
             const link = document.createElement('a');
-            link.download = `ID_${selectedUser.lastname || 'Student'}.png`;
+            link.download = `ID_${lastName}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
         });
