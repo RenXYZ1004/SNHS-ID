@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student ID Studio Pro</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --brand-primary: #6366f1;
+            --brand-hover: #4f46e5;
+            --bg-body: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-input: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.15) 0px, transparent 50%);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            height: 60px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-icon {
+            width: 50px;
+            height: 34px;
+            background: var(--brand-gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .badge-version {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            font-weight: 600;
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 1.25rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        @media (min-width: 992px) {
+            .app-layout {
+                grid-template-columns: 400px 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .select-custom {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 0.875rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .student-info-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.825rem;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary {
+            background: var(--brand-gradient);
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .stage-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            height: calc(100vh - 100px);
+            overflow: hidden;
+        }
+
+        .canvas-frame {
+            position: relative;
+            padding: 8px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            display: block;
+            max-height: calc(100vh - 140px);
+            width: auto;
+            max-width: 100%;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .loading-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--brand-primary);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <div class="brand-icon">TRAQ</div>
+            <div class="brand-title">TRAQ ID Studio</div>
+            <span class="badge-version">PRO</span>
+        </div>
+    </nav>
+
+    <main class="app-layout">
+        <section class="panel">
+            <div class="panel-title">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                Select Student
+            </div>
+
+            <div id="loadingState" class="loading-overlay">
+                <div class="spinner"></div>
+                <span>Fetching directory...</span>
+            </div>
+
+            <div id="formControls" style="display: none;">
+                
+                <!-- 1. Grade Level Dropdown Filter -->
+                <div class="filter-group">
+                    <label class="filter-label" for="gradeDropdown">Grade Level</label>
+                    <select id="gradeDropdown" class="select-custom">
+                        <option value="ALL">All Grade Levels</option>
+                    </select>
+                </div>
+
+                <!-- 2. Search Box -->
+                <div class="search-box" style="margin-top: 0.5rem;">
+                    <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search student name...">
+                </div>
+
+                <!-- 3. Student List Menu -->
+                <div class="filter-group" style="margin-top: 0.5rem;">
+                    <label class="filter-label" for="studentDropdown">Student Directory</label>
+                    <select id="studentDropdown" class="select-custom" size="4"></select>
+                </div>
+
+                <!-- Selected Student Info Summary -->
+                <div class="student-info-card">
+                    <div class="info-row">
+                        <span class="info-label">Full Name</span>
+                        <span id="infoName" class="info-value">--</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Grade & Section</span>
+                        <span id="infoGrade" class="info-value">--</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Parent Contact</span>
+                        <span id="infoPhone" class="info-value">--</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button id="generateBtn" class="btn btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Render ID Badge
+                    </button>
+
+                    <button id="downloadBtn" class="btn btn-success" style="display: none;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download PNG
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="stage-container">
+            <div class="canvas-frame">
+                <canvas id="idCanvas" width="569" height="908"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwxZVq1kWOrghEDSFU1RqY0cD2zfGXSwC7xFMWsbKHet3oa7qs9kFkDqBykFZD5Jdg4gQ/exec"; 
+        const TEMPLATE_URL = "ID-Temp.png"; 
+
+        const canvas = document.getElementById('idCanvas');
+        const ctx = canvas.getContext('2d');
+        let allStudents = [];
+
+        window.onload = async () => {
+            try {
+                const response = await fetch(API_URL);
+                allStudents = await response.json();
+                
+                setupGradeFilter(allStudents);
+                applyFilters();
+
+                document.getElementById('loadingState').style.display = "none";
+                document.getElementById('formControls').style.display = "block";
+
+            } catch (error) {
+                document.getElementById('loadingState').innerHTML = `<span style="color:#ef4444;">Failed to load student list. Check API link.</span>`;
+                console.error("Data Fetch Error:", error);
+            }
+        };
+
+        // Extract unique grade levels dynamically from your Google Sheet
+        function setupGradeFilter(students) {
+            const gradeDropdown = document.getElementById('gradeDropdown');
+            const grades = new Set();
+
+            students.forEach(s => {
+                if (s.grade) grades.add(String(s.grade).trim());
+            });
+
+            // Sort grades numerically/alphabetically
+            const sortedGrades = Array.from(grades).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+
+            sortedGrades.forEach(grade => {
+                const option = document.createElement('option');
+                option.value = grade;
+                option.text = `Grade ${grade}`;
+                gradeDropdown.appendChild(option);
+            });
+        }
+
+        // Apply Grade Filter + Search Bar simultaneously
+        function applyFilters() {
+            const selectedGrade = document.getElementById('gradeDropdown').value;
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtered = allStudents.filter(s => {
+                const matchesGrade = (selectedGrade === "ALL") || (String(s.grade).trim() === selectedGrade);
+                const matchesSearch = `${s.lastname} ${s.firstname} ${s.grade} ${s.section}`.toLowerCase().includes(searchQuery);
+                return matchesGrade && matchesSearch;
+            });
+
+            populateStudentDropdown(filtered);
+        }
+
+        function populateStudentDropdown(list) {
+            const dropdown = document.getElementById('studentDropdown');
+            dropdown.innerHTML = ""; 
+
+            if (list.length === 0) {
+                const option = document.createElement('option');
+                option.text = "No students found";
+                option.disabled = true;
+                dropdown.appendChild(option);
+                clearStudentInfo();
+                return;
+            }
+
+            list.forEach((student) => {
+                const originalIndex = allStudents.indexOf(student);
+                const option = document.createElement('option');
+                option.value = originalIndex;
+                option.text = `${student.lastname}, ${student.firstname} (Grade ${student.grade || '-'})`;
+                dropdown.appendChild(option);
+            });
+
+            dropdown.selectedIndex = 0;
+            updateStudentInfo(dropdown.value);
+            renderIDCard();
+        }
+
+        document.getElementById('gradeDropdown').addEventListener('change', applyFilters);
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+        document.getElementById('studentDropdown').addEventListener('change', (e) => {
+            updateStudentInfo(e.target.value);
+            renderIDCard();
+        });
+
+        function clearStudentInfo() {
+            document.getElementById('infoName').innerText = '--';
+            document.getElementById('infoGrade').innerText = '--';
+            document.getElementById('infoPhone').innerText = '--';
+        }
+
+        function updateStudentInfo(index) {
+            const user = allStudents[index];
+            if (!user) return;
+            document.getElementById('infoName').innerText = `${user.firstname || ''} ${user.lastname || ''}`;
+            document.getElementById('infoGrade').innerText = `${user.grade || ''} ${user.section || ''}`;
+            document.getElementById('infoPhone').innerText = user.parentPhone || '--';
+        }
+
+        function getDirectDriveImageUrl(url) {
+            if (!url) return null;
+            const match = url.match(/[-\w]{25,}/);
+            if (match && match[0]) {
+                return `https://lh3.googleusercontent.com/d/${match[0]}`;
+            }
+            return url;
+        }
+
+        function renderIDCard() {
+            const btn = document.getElementById('generateBtn');
+            const dropdown = document.getElementById('studentDropdown');
+            
+            if (!dropdown.value || dropdown.value === "") return;
+            const selectedUser = allStudents[dropdown.value]; 
+
+            if (!selectedUser) return;
+            btn.innerText = "Rendering...";
+
+            const templateImg = new Image();
+            templateImg.crossOrigin = "Anonymous";
+            templateImg.src = TEMPLATE_URL;
+            
+            templateImg.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height); 
+
+                const drawDetails = (userPhoto = null) => {
+                    if (userPhoto) {
+                        const targetX = 174; 
+                        const targetY = 185; 
+                        const targetSize = 220; 
+
+                        const imgW = userPhoto.width;
+                        const imgH = userPhoto.height;
+
+                        const scale = Math.max(targetSize / imgW, targetSize / imgH);
+                        const drawW = imgW * scale;
+                        const drawH = imgH * scale;
+
+                        const drawX = targetX + (targetSize - drawW) / 2;
+                        const drawY = targetY + (targetSize - drawH) / 2;
+
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.rect(targetX, targetY, targetSize, targetSize);
+                        ctx.clip();
+                        ctx.drawImage(userPhoto, drawX, drawY, drawW, drawH);
+                        ctx.restore();
+                    }
+
+                    ctx.textAlign = "center"; 
+                    ctx.fillStyle = "#111111";
+                    ctx.font = "bold 18px Arial";
+                    
+                    const centerX = 284; 
+
+                    // Name
+                    const fullName = `${selectedUser.lastname || ""}, ${selectedUser.firstname || ""} ${selectedUser.middleName || ""}`.trim();
+                    ctx.fillText(fullName.toUpperCase(), centerX, 475);
+
+                    // LRN
+                    ctx.fillText((selectedUser.lrn || ""), centerX, 340);
+
+                    // Grade & Section
+                    const gradeSec = `${selectedUser.grade || ''} ${selectedUser.section || ''}`.trim();
+                    ctx.fillText(gradeSec.toUpperCase(), centerX, 605);
+
+                    // Parent's Phone
+                    ctx.fillText((selectedUser.parentPhone || ""), centerX, 670);
+
+                    document.getElementById('downloadBtn').style.display = "flex";
+                    btn.innerText = "Render ID Badge";
+                };
+
+                if (selectedUser.photoUrl) {
+                    const userImg = new Image();
+                    userImg.crossOrigin = "Anonymous";
+                    const directUrl = getDirectDriveImageUrl(selectedUser.photoUrl);
+                    userImg.src = directUrl; 
+                    
+                    userImg.onload = () => drawDetails(userImg);
+                    userImg.onerror = () => drawDetails(null);
+                } else {
+                    drawDetails(null);
+                }
+            };
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', renderIDCard);
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const dropdown = document.getElementById('studentDropdown');
+            const selectedUser = allStudents[dropdown.value];
+            
+            const link = document.createElement('a');
+            link.download = `ID_${selectedUser.lastname || 'Student'}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    </script>
+</body>
+</html>

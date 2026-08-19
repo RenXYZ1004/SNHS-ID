@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical ID Template</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #333;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        /* Standard Vertical ID Dimensions (approx 630x1000 for high res) */
+        .id-card {
+            width: 500px;
+            height: 800px;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffc0cb 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffb6c1;
+        }
+        .header {
+            background-color: #900C3F;
+            color: white;
+            text-align: center;
+            padding: 20px 10px;
+            border-bottom: 5px solid #FFC300;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+        .title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #900C3F;
+            margin-top: 15px;
+        }
+        .photo-box {
+            width: 200px;
+            height: 200px;
+            border: 3px dashed #900C3F;
+            background-color: #f1f1f1;
+            margin: 20px auto;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            font-weight: bold;
+        }
+        .details-container {
+            text-align: center;
+            padding: 0 100px;
+        }
+        .field-group {
+            margin-bottom: 15px;
+        }
+        .label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #900C3F;
+            margin-bottom: 2px;
+        }
+        .line {
+            border-bottom: 1px solid #333;
+            height: 25px;
+            width: 100%;
+        }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #900C3F;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            border-top: 5px solid #FFC300;
+        }
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: absolute;
+            bottom: 60px;
+            width: calc(100% - 80px);
+        }
+        .sig-line {
+            width: 45%;
+            border-top: 1px solid #333;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="id-card">
+        <div class="header">
+            <h1>SALVACION NATIONAL HIGH SCHOOL</h1>
+            <p>SCHOOL ID: 301734</p>
+        </div>
+        
+        <div class="title">STUDENT IDENTIFICATION</div>
+
+        <div class="photo-box">
+            (INSERT PHOTO HERE)
+        </div>
+
+        <div class="details-container">
+            <div class="field-group">
+                <div class="label">LAST NAME, FIRST NAME M.I.</div>
+                <div class="line"></div>
+            </div>
+            <div class="field-group">
+                <div class="label">LRN</div>
+                <div class="line"></div>
+            </div>
+            <div class="field-group">
+                <div class="label">GRADE & SECTION</div>
+                <div class="line"></div>
+            </div>
+            <div class="field-group">
+                <div class="label">PARENT'S PHONE NO.</div>
+                <div class="line"></div>
+            </div>
+        </div>
+
+        <div class="signatures">
+            <div class="sig-line">STUDENT'S SIGNATURE</div>
+            <div class="sig-line">PRINCIPAL'S SIGNATURE</div>
+        </div>
+
+        <div class="footer">
+            SALVACION, BUSUANGA, PALAWAN, PHILIPPINES | Valid SY: 2023-2024
+        </div>
+    </div>
+
+</body>
+</html>
